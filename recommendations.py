@@ -41,5 +41,5 @@ def sim_distance(prefs_dict,p1,p2):
 
 
 # Testing the code
-sim_distance(critics,'Lisa Rose','Gene Seymour')
+#sim_distance(critics,'Lisa Rose','Gene Seymour')
 
