@@ -43,3 +43,23 @@ def sim_distance(prefs_dict,p1,p2):
 # Testing the code
 #sim_distance(critics,'Lisa Rose','Gene Seymour')
 
+# Function to calculate pearson coefficient
+def sim_pearson(prefs,p1,p2):
+    si = {}
+    for item in prefs[p1]:
+        if item in prefs[p2]:
+            si[item] =1
+   if (len(si) == 0):
+       print "No review common to %s and %s \n"%(p1,p2)
+       return 0
+   n = len(si)
+   sum1 = sum(prefs[p1][item] for item in si)
+   sum2 = sum(prefs[p2][item] for item in si)
+
+   sumsq1 = sum(pow(prefs[p1][item],2) for item in si)
+   sumsq1 = sum(pow(prefs[p2][item],2) for item in si)
+
+   pSum = sum(prefs[p1][item]*prefs[p2][item] for item in si)
+
+   num = pSum - (sum1*sum2/n)
+   den = sqrt(
