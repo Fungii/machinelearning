@@ -1,4 +1,0 @@
-machinelearning
-===============
-
-Basic learner stuff
