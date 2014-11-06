@@ -37,11 +37,12 @@ def sim_distance(prefs_dict,p1,p2):
 # Avoiding division by zero scenario
     score = 1/(1+sum_of_squares)
     print "Euclidean similarity score for the 2 %s and %s critics is %f"%(p1,p2,score)
+    return score
     
 
 
 # Testing the code
-sim_distance(critics,'Lisa Rose','Gene Seymour')
+#sim_distance(critics,'Lisa Rose','Gene Seymour')
 
 # Function to calculate pearson coefficient
 def sim_pearson(prefs,p1,p2):
@@ -67,5 +68,22 @@ def sim_pearson(prefs,p1,p2):
     if den ==0 : return 0
     r = num/den
     print "Pearson score for critics %s and %s is %f \n"%(p1,p2,r)
+    return r
 #Testing pearson code
-sim_pearson(critics,'Lisa Rose','Gene Seymour')
+#sim_pearson(critics,'Lisa Rose','Gene Seymour')
+
+#Function to rank critics
+
+def rank_critics(prefs,p1,similarity=sim_pearson):
+    scores = []
+    for person in prefs:
+        if person == p1: continue
+        scores.append((similarity(prefs,person,p1),person))
+    scores.sort()
+    scores.reverse()
+    print scores
+
+#initial test
+rank_critics(critics,'Lisa Rose',sim_pearson)
+rank_critics(critics,'Lisa Rose',sim_distance)
+
