@@ -37,12 +37,12 @@ def sim_distance(prefs_dict,p1,p2):
             sum_of_squares = sum_of_squares + pow(prefs_dict[p1][item] - prefs_dict[p2][item],2)
 # Avoiding division by zero scenario
     score = 1/(1+sum_of_squares)
-    print "Euclidean similarity score for the 2 %s and %s critics is %f"%(p1,p2,score)
+    return score
     
 
 
 # Testing the code
-sim_distance(critics,'Lisa Rose','Gene Seymour')
+#sim_distance(critics,'Lisa Rose','Gene Seymour')
 
 # Function to calculate pearson coefficient
 def sim_pearson(prefs,p1,p2):
@@ -67,6 +67,46 @@ def sim_pearson(prefs,p1,p2):
     den = sqrt((sumsq1 - pow(sum1,2)/n)*(sumsq2 - pow(sum2,2)/n))
     if den ==0 : return 0
     r = num/den
-    print "Pearson score for critics %s and %s is %f \n"%(p1,p2,r)
+    return r
 #Testing pearson code
-sim_pearson(critics,'Lisa Rose','Gene Seymour')
+#sim_pearson(critics,'Lisa Rose','Gene Seymour')
+
+#Function to rank critics
+
+def rank_critics(prefs,p1,similarity=sim_pearson):
+    scores = []
+    for person in prefs:
+        if person == p1: continue
+        scores.append((similarity(prefs,person,p1),person))
+    scores.sort()
+    scores.reverse()
+    print scores
+
+#initial test
+#rank_critics(critics,'Lisa Rose',sim_pearson)
+#rank_critics(critics,'Lisa Rose',sim_distance)
+
+def getRecommendations(prefs,person,similarity=sim_pearson):
+    total = {}
+    simSum = {}
+    recommendations = {}
+    
+    #Loop through the main dict
+    for others in prefs:
+        if others == person:continue # Not comparing with self
+        sim = similarity(prefs,person,others)
+        if sim <= 0 : continue
+        for items in prefs[others]:
+            if items in prefs[person]:continue # Avoiding getting reccos for movies already seen
+            total.setdefault(items,0)
+            total[items]+=prefs[others][items]*sim
+            simSum.setdefault(items,0)
+            simSum[items]+=sim
+
+    #Ceating recommendation list
+    for items in total:
+        recommendations[items] = total[items]/simSum[items]
+    print recommendations
+
+#Resting getRecommendations
+getRecommendations(critics,'Toby',sim_pearson)
