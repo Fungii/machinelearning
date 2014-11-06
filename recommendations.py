@@ -1,5 +1,6 @@
 # This program deals with collaborative filtering.
 
+from math import sqrt
 
 critics={'Lisa Rose': {'Lady in the Water': 2.5, 'Snakes on a Plane': 3.5,
 'Just My Luck': 3.0, 'Superman Returns': 3.5, 'You, Me and Dupree': 2.5,
@@ -32,16 +33,15 @@ def sim_distance(prefs_dict,p1,p2):
     sum_of_squares = 0
     for item in prefs_dict[p1]:
         if item in prefs_dict[p2]:
-            print "sum_of_squares = %d"%sum_of_squares
             sum_of_squares = sum_of_squares + pow(prefs_dict[p1][item] - prefs_dict[p2][item],2)
 # Avoiding division by zero scenario
     score = 1/(1+sum_of_squares)
-    print "Similarity score for the 2 %s and %s critics is %f"%(p1,p2,score)
+    print "Euclidean similarity score for the 2 %s and %s critics is %f"%(p1,p2,score)
     
 
 
 # Testing the code
-#sim_distance(critics,'Lisa Rose','Gene Seymour')
+sim_distance(critics,'Lisa Rose','Gene Seymour')
 
 # Function to calculate pearson coefficient
 def sim_pearson(prefs,p1,p2):
@@ -49,17 +49,23 @@ def sim_pearson(prefs,p1,p2):
     for item in prefs[p1]:
         if item in prefs[p2]:
             si[item] =1
-   if (len(si) == 0):
-       print "No review common to %s and %s \n"%(p1,p2)
-       return 0
-   n = len(si)
-   sum1 = sum(prefs[p1][item] for item in si)
-   sum2 = sum(prefs[p2][item] for item in si)
+   
+    if (len(si) == 0):
+        print "No review common to %s and %s \n"%(p1,p2)
+        return 0
+    n = len(si)
+    sum1 = sum(prefs[p1][item] for item in si)
+    sum2 = sum(prefs[p2][item] for item in si)
 
-   sumsq1 = sum(pow(prefs[p1][item],2) for item in si)
-   sumsq1 = sum(pow(prefs[p2][item],2) for item in si)
+    sumsq1 = sum(pow(prefs[p1][item],2) for item in si)
+    sumsq2 = sum(pow(prefs[p2][item],2) for item in si)
 
-   pSum = sum(prefs[p1][item]*prefs[p2][item] for item in si)
+    pSum = sum(prefs[p1][item]*prefs[p2][item] for item in si)
 
-   num = pSum - (sum1*sum2/n)
-   den = sqrt(
+    num = pSum - (sum1*sum2/n)
+    den = sqrt((sumsq1 - pow(sum1,2)/n)*(sumsq2 - pow(sum2,2)/n))
+    if den ==0 : return 0
+    r = num/den
+    print "Pearson score for critics %s and %s is %f \n"%(p1,p2,r)
+#Testing pearson code
+sim_pearson(critics,'Lisa Rose','Gene Seymour')
