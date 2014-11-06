@@ -108,5 +108,5 @@ def getRecommendations(prefs,person,similarity=sim_pearson):
         recommendations[items] = total[items]/simSum[items]
     print recommendations
 
-#Resting getRecommendations
+#Testing getRecommendations
 getRecommendations(critics,'Toby',sim_pearson)
