@@ -41,8 +41,6 @@ def sim_distance(prefs_dict,p1,p2):
     
 
 
-# Testing the code
-#sim_distance(critics,'Lisa Rose','Gene Seymour')
 
 # Function to calculate pearson coefficient
 def sim_pearson(prefs,p1,p2):
@@ -68,11 +66,9 @@ def sim_pearson(prefs,p1,p2):
     if den ==0 : return 0
     r = num/den
     return r
-#Testing pearson code
-#sim_pearson(critics,'Lisa Rose','Gene Seymour')
+
 
 #Function to rank critics
-
 def rank_critics(prefs,p1,similarity=sim_pearson):
     scores = []
     for person in prefs:
@@ -80,16 +76,13 @@ def rank_critics(prefs,p1,similarity=sim_pearson):
         scores.append((similarity(prefs,person,p1),person))
     scores.sort()
     scores.reverse()
-    print scores
-
-#initial test
-#rank_critics(critics,'Lisa Rose',sim_pearson)
-#rank_critics(critics,'Lisa Rose',sim_distance)
+    return scores
 
 def getRecommendations(prefs,person,similarity=sim_pearson):
     total = {}
     simSum = {}
     recommendations = {}
+    result = []
     
     #Loop through the main dict
     for others in prefs:
@@ -106,7 +99,49 @@ def getRecommendations(prefs,person,similarity=sim_pearson):
     #Ceating recommendation list
     for items in total:
         recommendations[items] = total[items]/simSum[items]
-    print recommendations
+    for items in recommendations:
+        result.append((items,recommendations[items]))
+    return result
 
-#Testing getRecommendations
-getRecommendations(critics,'Toby',sim_pearson)
+# Function to invert dictionary
+def transformDict(prefs):
+    invert = {}
+    for person in prefs:
+        for item in prefs[person]:
+            invert.setdefault(item,{})
+            invert[item][person] = prefs[person][item]
+
+    return invert
+
+
+#Earlier methods compared user against user but this method is not scalable to large number of users.
+#Item based filtering calculates similarity between items and not users.
+def itemBasedFiltering(prefs):
+    result = {}
+    itemPrefs = transformDict(prefs)
+
+    for item in itemPrefs:
+        scores = rank_critics(itemPrefs,item,sim_distance)
+        result[item] = scores
+
+    return result
+
+
+# Now we write a function to get user recommendations by item based filtering.
+def itemRecommendations(prefs,user):
+    itemMatch = itemBasedFiltering(prefs) # Building item based similarity database
+    userPrefs = prefs[user]
+    result = []
+    totalSim = {}
+    scores = {}
+    for (items,ratings) in userPrefs.items():
+        for (similarity,item2) in itemMatch[items]:
+            if item2 in userPrefs: continue
+            scores.setdefault(item2,0)
+            totalSim.setdefault(item2,0)
+            scores[item2] += similarity*ratings;
+            totalSim[item2] += similarity
+    #Creating final score list
+    for items in scores:
+        result.append((items,scores[items]/totalSim[items]))
+    return result
